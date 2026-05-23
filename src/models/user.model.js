@@ -16,7 +16,7 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        lowecase: true,
+        lowercase: true,
         trim: true
 
     },
@@ -56,22 +56,29 @@ const UserSchema = new Schema({
 //  this is for encrypt the password 
 
 //  next() -> Next is the function in middleware that tells us that work is done and move forward to next step 
+
+
+
+
+//  Password save hone se pehle encrypt karo
 UserSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
+
+// Login ke time password verify karo
 UserSchema.methods.isPasswordCorrect = async function(password){
  return await   bcrypt.compare(password,this.password)
 }
-
+// Short-lived access token (15min - 1hr)
 UserSchema.methods.generateAccessToken = function(){
    return jwt.sign(
         {
             _id: this._id,
             email: this.email,
             username:this.username,
-            fullname = this.fullname
+            fullname: this.fullname
         },
         process.env.ACCESS_TOKEN_SECRET ,
         {
@@ -93,4 +100,4 @@ UserSchema.methods.generateRefreshToken = function(){
 }
 
 
-export const User = mongoose.model("USer", UserSchema)
+export const User = mongoose.model("User", UserSchema)

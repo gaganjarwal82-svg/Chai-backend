@@ -17,5 +17,12 @@ app.use(express.static("public")) // public excess for access image and video
 app.use(cookieParser()) 
 
 
+//  routes 
+import UserRouter from "./routers/user.routes.js"
+
+
+//  routes declaration 
+app.use("/api/v1/users",UserRouter)
+
 
 export {app}
